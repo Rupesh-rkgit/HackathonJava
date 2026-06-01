@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/quizhub
+    username: ${DB_USER:quizhub}
+    password: ${DB_PASSWORD:quizhub}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false

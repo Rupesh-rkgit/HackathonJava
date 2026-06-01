@@ -32,7 +32,7 @@ public class Mcq {
     private Instant createdAt;
     private Instant updatedAt;
 
-    protected Mcq() {}
+    public Mcq() {}
 
     public Long getId() { return id; }
     public String getQuestionStem() { return questionStem; }

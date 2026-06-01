@@ -1,0 +1,91 @@
+.shell {
+  display: grid;
+  grid-template-columns: 268px 1fr;
+  min-height: 100vh;
+}
+.sidebar {
+  position: sticky; top: 0; height: 100vh;
+  background:
+    linear-gradient(180deg, #1b2944 0%, #16223b 100%);
+  color: #d3d8e2;
+  display: flex; flex-direction: column;
+  padding: 26px 20px;
+  border-right: 1px solid rgba(0,0,0,.2);
+}
+.sb-brand { display: flex; align-items: center; gap: 13px; padding: 0 8px 6px; }
+.sb-mark {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: grid; place-items: center;
+  background: var(--amber); color: #2a1d05;
+  font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 26px;
+  box-shadow: 0 4px 14px rgba(224,152,42,.35);
+}
+.sb-brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.sb-brand-text strong { font-family: var(--font-display); font-size: 19px; color: #f6f2e9; }
+.sb-brand-text span { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); }
+
+.sb-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 34px; flex: 1; }
+.sb-link {
+  display: flex; align-items: center; gap: 13px;
+  padding: 11px 14px; border-radius: var(--r-sm);
+  color: #aab2c4; font-weight: 500; font-size: 14.5px;
+  position: relative; transition: background .15s, color .15s;
+}
+.sb-link:hover { background: rgba(255,255,255,.05); color: #eef1f6; }
+.sb-link.active { background: rgba(224,152,42,.14); color: #fff; }
+.sb-link.active::before {
+  content: ''; position: absolute; left: -20px; top: 50%; transform: translateY(-50%);
+  width: 4px; height: 22px; border-radius: 0 4px 4px 0; background: var(--amber);
+}
+.sb-ico { font-size: 17px; width: 22px; text-align: center; opacity: .9; }
+
+.sb-foot { border-top: 1px solid rgba(255,255,255,.08); padding-top: 18px; }
+.sb-user { display: flex; align-items: center; gap: 12px; padding: 0 6px 14px; }
+.sb-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; flex-shrink: 0;
+  background: #2c3f63; color: var(--amber);
+  font-weight: 700; font-size: 14px; letter-spacing: .03em;
+}
+.sb-user-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.sb-user-text strong { font-size: 14px; color: #f1f3f7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-role {
+  font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  margin-top: 2px;
+}
+.sb-role.ADMIN { color: var(--amber); }
+.sb-role.SME { color: #8fa6c9; }
+.sb-logout {
+  width: 100%; background: transparent; border: 1px solid rgba(255,255,255,.16);
+  color: #c3cad8; padding: 9px; border-radius: var(--r-sm); cursor: pointer;
+  font-weight: 600; font-size: 13px; transition: background .15s, border-color .15s;
+}
+.sb-logout:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.3); }
+
+.main-col { min-width: 0; }
+.content { max-width: var(--maxw); margin: 0 auto; padding: 42px 46px 80px; }
+
+@media (max-width: 760px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: static; height: auto; flex-direction: row; align-items: center;
+    padding: 14px 18px; gap: 16px;
+  }
+  .sb-nav { flex-direction: row; margin: 0; overflow-x: auto; }
+  .sb-link.active::before { display: none; }
+  .sb-foot { border: none; padding: 0; }
+  .sb-user { display: none; }
+  .content { padding: 26px 20px 60px; }
+}
+
+/* shared page header */
+.page-head { margin-bottom: 28px; }
+.page-eyebrow {
+  font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--amber); display: inline-flex; align-items: center; gap: 8px;
+}
+.page-eyebrow::before { content: ''; width: 22px; height: 2px; background: var(--amber); }
+.page-title { font-size: clamp(30px, 4vw, 42px); margin: 12px 0 8px; }
+.page-title em { font-style: italic; color: var(--navy); }
+.page-sub { color: var(--ink-soft); font-size: 15.5px; max-width: 640px; }
+.page-head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }

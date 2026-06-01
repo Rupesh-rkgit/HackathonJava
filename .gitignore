@@ -17,3 +17,12 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Playwright artifacts
+.playwright-mcp/
+*.png
+
+# TS build artifacts
+*.tsbuildinfo
+frontend/vite.config.d.ts
+frontend/vite.config.js

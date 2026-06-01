@@ -1,0 +1,15 @@
+Empower the ATCI Learning and Talent Transformation (L&TT) team by building an AI-Enabled Intelligent Quiz Platform!
+Collaborate with the L&TT team to transform the manual and time-consuming MCQ creation, review, and quiz management process into a streamlined, intelligent system. Step in to design a solution that enhances SME productivity and drives higher learner engagement through interactive quizzes!
+
+In ATCI, the L&TT (Learning and Talent Transformation) team continuously works to enhance learning engagement initiatives for employees through interactive and impactful learning experiences.
+
+A key challenge identified is the absence of a centralized and customizable platform for conducting practice quizzes. Currently, SMEs rely on external tools that limit flexibility, restrict content control, and do not seamlessly integrate with internal learning workflows. This results in fragmented learning experiences, limited visibility into participant performance, and reduced effectiveness of engagement activities.
+
+Existing process:
+SMEs use third-party platforms to create and conduct quizzes
+Participants access quizzes through external links and tools
+Limited control over quiz customization, data, and reporting
+No unified leaderboard or session-based performance tracking
+Free versions of tools provide restricted features and limited analytics
+The objective is to design and develop an AI-Enabled Intelligent Quiz Platform (Smart Quiz AI Hub) that centralizes MCQ creation and review. SMEs should be able to create or upload MCQs via Excel, while assigned reviewers can evaluate and approve or reject them. Admin should be able to assign reviewers to ensure a structured and efficient validation process.
+

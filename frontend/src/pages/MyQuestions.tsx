@@ -51,17 +51,12 @@ export default function MyQuestions() {
   return (
     <div>
       <div className="page-head">
-        <div className="page-head-row">
-          <div>
-            <span className="page-eyebrow">My Workspace</span>
-            <h1 className="page-title">My <em>Questions</em></h1>
-            <p className="page-sub">
-              Every MCQ you've authored and its place in the review pipeline.
-              Draft and rejected items can be edited and resubmitted.
-            </p>
-          </div>
-          <button className="btn btn-primary" onClick={() => navigate('/add')}>＋ New Question</button>
-        </div>
+        <span className="page-eyebrow">My Workspace</span>
+        <h1 className="page-title">My <em>Questions</em></h1>
+        <p className="page-sub">
+          Every MCQ you've authored and its place in the review pipeline.
+          Draft and rejected items can be edited and resubmitted.
+        </p>
       </div>
 
       <div className="card section-card">

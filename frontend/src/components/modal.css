@@ -24,6 +24,7 @@
   background:
     linear-gradient(180deg, rgba(224,152,42,.06), transparent);
 }
+.modal-head-text { flex: 1; min-width: 0; }
 .modal-head h2 { font-size: 24px; }
 .modal-sub { font-size: 13px; color: var(--ink-soft); margin-top: 5px; }
 .modal-x {

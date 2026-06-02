@@ -36,9 +36,9 @@ export function Modal({ open, onClose, title, subtitle, children, width = 640 }:
             onClick={(e) => e.stopPropagation()}
           >
             <header className="modal-head">
-              <div>
+              <div className="modal-head-text">
                 <h2>{title}</h2>
-                {subtitle && <p className="modal-sub">{subtitle}</p>}
+                {subtitle && <div className="modal-sub">{subtitle}</div>}
               </div>
               <button className="modal-x" onClick={onClose} aria-label="Close">×</button>
             </header>

@@ -23,9 +23,11 @@ public class BulkController {
     public ResponseEntity<ByteArrayResource> template() {
         byte[] bytes = ExcelTemplate.emptyTemplate();
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Template_MCQs.xlsx")
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"Template_MCQs.xlsx\"")
                 .contentType(MediaType.parseMediaType(
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .contentLength(bytes.length)
                 .body(new ByteArrayResource(bytes));
     }
 

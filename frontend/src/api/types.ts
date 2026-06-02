@@ -54,6 +54,7 @@ export interface Page<T> {
 export interface NamedRef { id: number; name: string }
 export interface EligibleReviewer { enterpriseId: string; name: string }
 export interface BulkRowResult { rowNumber: number; success: boolean; message: string }
+export interface BulkActionResult { mcqId: number; success: boolean; message: string }
 
 export const STATUS_LABEL: Record<McqStatus, string> = {
   DRAFT: 'Draft',

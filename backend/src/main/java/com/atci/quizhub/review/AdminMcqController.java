@@ -3,9 +3,12 @@ package com.atci.quizhub.review;
 import com.atci.quizhub.auth.CurrentUser;
 import com.atci.quizhub.mcq.McqRepository;
 import com.atci.quizhub.mcq.McqService;
+import com.atci.quizhub.mcq.dto.BulkActionResult;
+import com.atci.quizhub.mcq.dto.IdListRequest;
 import com.atci.quizhub.mcq.dto.McqRequest;
 import com.atci.quizhub.mcq.dto.McqResponse;
 import com.atci.quizhub.review.dto.AssignRequest;
+import com.atci.quizhub.review.dto.BulkAssignRequest;
 import com.atci.quizhub.review.dto.EligibleReviewerResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -48,5 +51,16 @@ public class AdminMcqController {
     @PostMapping("/{mcqId}/assign")
     public void assign(@PathVariable Long mcqId, @Valid @RequestBody AssignRequest req) {
         reviewService.assign(mcqId, req.reviewerEnterpriseId(), currentUser.get().getEnterpriseId());
+    }
+
+    @PostMapping("/bulk-eligible-reviewers")
+    public List<EligibleReviewerResponse> bulkEligible(@Valid @RequestBody IdListRequest req) {
+        return adminService.commonEligibleReviewers(req.ids());
+    }
+
+    @PostMapping("/bulk-assign")
+    public List<BulkActionResult> bulkAssign(@Valid @RequestBody BulkAssignRequest req) {
+        return adminService.bulkAssign(req.ids(), req.reviewerEnterpriseId(),
+                currentUser.get().getEnterpriseId());
     }
 }

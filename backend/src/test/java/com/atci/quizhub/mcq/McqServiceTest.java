@@ -79,4 +79,32 @@ class McqServiceTest {
         var updated = service.update(ready.id(), req(SaveMode.SAVE), "birendra.kumar.singh");
         assertEquals(McqStatus.READY_FOR_REVIEW, updated.status());
     }
+
+    @Test
+    void sendForReviewMovesDraftToReady() {
+        var draft = service.create(req(SaveMode.SAVE), sme);
+        var resp = service.sendForReview(draft.id(), sme);
+        assertEquals(McqStatus.READY_FOR_REVIEW, resp.status());
+    }
+
+    @Test
+    void sendForReviewRejectedByNonCreator() {
+        var draft = service.create(req(SaveMode.SAVE), sme);
+        assertThrows(ForbiddenException.class,
+            () -> service.sendForReview(draft.id(), "divya.madhanasekar"));
+    }
+
+    @Test
+    void bulkSendForReviewReturnsPerItemResults() {
+        var d1 = service.create(req(SaveMode.SAVE), sme);
+        var d2 = service.create(req(SaveMode.SAVE), sme);
+        var other = service.create(req(SaveMode.SAVE), "divya.madhanasekar"); // not owned by sme
+        var results = service.bulkSendForReview(
+            java.util.List.of(d1.id(), d2.id(), other.id()), sme);
+        assertEquals(3, results.size());
+        assertTrue(results.get(0).success());
+        assertTrue(results.get(1).success());
+        assertFalse(results.get(2).success()); // sme can't send someone else's draft
+        assertEquals(McqStatus.READY_FOR_REVIEW, service.getEntity(d1.id()).getStatus());
+    }
 }

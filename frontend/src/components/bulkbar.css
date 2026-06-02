@@ -1,0 +1,26 @@
+.bulkbar {
+  position: fixed;
+  left: 50%; bottom: 28px;
+  z-index: 800;
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px 12px 20px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 100px;
+  box-shadow: var(--shadow-lg);
+  min-width: 380px;
+}
+.bb-count { font-size: 14px; }
+.bb-count strong { color: var(--amber); font-size: 15px; }
+.bb-clear {
+  background: transparent; border: none; cursor: pointer;
+  color: #b9c0d0; font-size: 13px; font-weight: 600; text-decoration: underline;
+  text-underline-offset: 2px; padding: 4px;
+}
+.bb-clear:hover { color: #fff; }
+.bb-spacer { flex: 1; }
+
+/* row selection affordances (used in data tables) */
+.row-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--navy); }
+.qtable tbody tr.row-selected { background: rgba(224,152,42,.10); }
+.qtable tbody tr.row-selected:hover { background: rgba(224,152,42,.14); }

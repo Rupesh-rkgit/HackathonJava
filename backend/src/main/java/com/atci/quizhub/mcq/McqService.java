@@ -63,6 +63,38 @@ public class McqService {
         return McqResponse.from(mcqs.save(m), null);
     }
 
+    /**
+     * Transition a single MCQ to Ready-for-Review WITHOUT editing its fields.
+     * Used by the SME "Send for Review" action (single and bulk).
+     */
+    public McqResponse sendForReview(Long id, String editorEnterpriseId) {
+        Mcq m = getEntity(id);
+        User editor = users.findByEnterpriseId(editorEnterpriseId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        boolean isCreator = m.getCreator().getEnterpriseId().equals(editorEnterpriseId);
+        boolean isAdmin = editor.getRole() == Role.ADMIN;
+        if (!isCreator && !isAdmin) {
+            throw new ForbiddenException("Only the creator or an admin may send this MCQ for review");
+        }
+        m.setStatus(lifecycle.afterSendForReview(m.getStatus())); // throws if not Draft/Rejected
+        return McqResponse.from(mcqs.save(m), null);
+    }
+
+    /** Bulk variant: send many MCQs for review, returning a per-item pass/fail result. */
+    public java.util.List<com.atci.quizhub.mcq.dto.BulkActionResult> bulkSendForReview(
+            java.util.List<Long> ids, String editorEnterpriseId) {
+        java.util.List<com.atci.quizhub.mcq.dto.BulkActionResult> results = new java.util.ArrayList<>();
+        for (Long id : ids) {
+            try {
+                sendForReview(id, editorEnterpriseId);
+                results.add(new com.atci.quizhub.mcq.dto.BulkActionResult(id, true, "Sent for review"));
+            } catch (RuntimeException e) {
+                results.add(new com.atci.quizhub.mcq.dto.BulkActionResult(id, false, e.getMessage()));
+            }
+        }
+        return results;
+    }
+
     public Page<McqResponse> myQuestions(String creatorEnterpriseId, Pageable pageable) {
         User creator = users.findByEnterpriseId(creatorEnterpriseId)
                 .orElseThrow(() -> new NotFoundException("User not found"));

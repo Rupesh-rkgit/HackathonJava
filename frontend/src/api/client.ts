@@ -1,5 +1,5 @@
 import type {
-  BulkRowResult, EligibleReviewer, LoginResponse, Mcq, McqRequest, NamedRef, Page,
+  BulkActionResult, BulkRowResult, EligibleReviewer, LoginResponse, Mcq, McqRequest, NamedRef, Page,
 } from './types'
 
 const TOKEN_KEY = 'quizhub.token'
@@ -67,6 +67,10 @@ export const api = {
   getMcq: (id: number) => request<Mcq>(`/api/mcqs/${id}`),
   createMcq: (body: McqRequest) =>
     request<Mcq>('/api/mcqs', { method: 'POST', body: JSON.stringify(body) }),
+  bulkSendForReview: (ids: number[]) =>
+    request<BulkActionResult[]>('/api/mcqs/bulk-send-for-review', {
+      method: 'POST', body: JSON.stringify({ ids }),
+    }),
   updateMcq: (id: number, body: McqRequest) =>
     request<Mcq>(`/api/mcqs/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
 
@@ -97,6 +101,14 @@ export const api = {
   assignReviewer: (mcqId: number, reviewerEnterpriseId: string) =>
     request<void>(`/api/admin/mcqs/${mcqId}/assign`, {
       method: 'POST', body: JSON.stringify({ reviewerEnterpriseId }),
+    }),
+  bulkEligibleReviewers: (ids: number[]) =>
+    request<EligibleReviewer[]>('/api/admin/mcqs/bulk-eligible-reviewers', {
+      method: 'POST', body: JSON.stringify({ ids }),
+    }),
+  bulkAssignReviewer: (ids: number[], reviewerEnterpriseId: string) =>
+    request<BulkActionResult[]>('/api/admin/mcqs/bulk-assign', {
+      method: 'POST', body: JSON.stringify({ ids, reviewerEnterpriseId }),
     }),
 }
 

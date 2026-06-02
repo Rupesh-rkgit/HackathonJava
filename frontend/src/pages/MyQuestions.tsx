@@ -7,6 +7,7 @@ import { McqForm } from '../components/McqForm'
 import { Pagination } from '../components/Pagination'
 import { StatusPill } from '../components/StatusPill'
 import { LifecyclePipeline } from '../components/LifecyclePipeline'
+import { BulkBar } from '../components/BulkBar'
 import { useToast } from '../components/Toast'
 
 export default function MyQuestions() {
@@ -15,13 +16,17 @@ export default function MyQuestions() {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState<Mcq | null>(null)
   const [saving, setSaving] = useState(false)
+  const [selected, setSelected] = useState<Set<number>>(new Set())
+  const [sending, setSending] = useState(false)
   const toast = useToast()
   const navigate = useNavigate()
 
   async function load(p = page) {
     setLoading(true)
-    try { setData(await api.myQuestions(p)) }
-    catch (e) { toast('error', e instanceof ApiError ? e.message : 'Failed to load') }
+    try {
+      setData(await api.myQuestions(p))
+      setSelected(new Set())
+    } catch (e) { toast('error', e instanceof ApiError ? e.message : 'Failed to load') }
     finally { setLoading(false) }
   }
   useEffect(() => { load(page) /* eslint-disable-next-line */ }, [page])
@@ -47,6 +52,35 @@ export default function MyQuestions() {
   }
 
   const items = data?.content ?? []
+  const selectableIds = items.filter(editable).map((m) => m.id)
+  const allSelected = selectableIds.length > 0 && selectableIds.every((id) => selected.has(id))
+
+  function toggle(id: number) {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+  function toggleAll() {
+    setSelected(allSelected ? new Set() : new Set(selectableIds))
+  }
+
+  async function bulkSend() {
+    const ids = [...selected]
+    if (!ids.length) return
+    setSending(true)
+    try {
+      const results = await api.bulkSendForReview(ids)
+      const ok = results.filter((r) => r.success).length
+      const fail = results.length - ok
+      toast(fail === 0 ? 'success' : 'info',
+        `${ok} sent for review${fail ? `, ${fail} could not be sent` : ''}.`)
+      load()
+    } catch (e) {
+      toast('error', e instanceof ApiError ? e.message : 'Bulk send failed')
+    } finally { setSending(false) }
+  }
 
   return (
     <div>
@@ -73,17 +107,33 @@ export default function MyQuestions() {
           <table className="qtable">
             <thead>
               <tr>
-                <th style={{ width: 56 }}>ID</th>
+                <th style={{ width: 40 }}>
+                  <input
+                    type="checkbox" className="row-check" aria-label="Select all sendable"
+                    checked={allSelected} disabled={selectableIds.length === 0}
+                    onChange={toggleAll}
+                  />
+                </th>
+                <th style={{ width: 52 }}>ID</th>
                 <th>Question</th>
-                <th style={{ width: 150 }}>Stack</th>
+                <th style={{ width: 140 }}>Stack</th>
                 <th style={{ width: 96 }}>Difficulty</th>
-                <th style={{ width: 168 }}>Status</th>
-                <th style={{ width: 120, textAlign: 'right' }}>Actions</th>
+                <th style={{ width: 160 }}>Status</th>
+                <th style={{ width: 110, textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {items.map((m) => (
-                <tr key={m.id}>
+                <tr key={m.id} className={selected.has(m.id) ? 'row-selected' : ''}>
+                  <td>
+                    {editable(m) ? (
+                      <input
+                        type="checkbox" className="row-check"
+                        aria-label={`Select question ${m.id}`}
+                        checked={selected.has(m.id)} onChange={() => toggle(m.id)}
+                      />
+                    ) : null}
+                  </td>
                   <td className="q-id">#{m.id}</td>
                   <td className="q-stem">
                     <strong>{m.questionStem}</strong>
@@ -112,6 +162,15 @@ export default function MyQuestions() {
         )}
         {data && <Pagination page={data.number} totalPages={data.totalPages} totalElements={data.totalElements} onChange={setPage} />}
       </div>
+
+      <BulkBar
+        count={selected.size}
+        onClear={() => setSelected(new Set())}
+        actionLabel="Send for Review →"
+        busy={sending}
+        onAction={bulkSend}
+        noun="question"
+      />
 
       <Modal
         open={!!editing}

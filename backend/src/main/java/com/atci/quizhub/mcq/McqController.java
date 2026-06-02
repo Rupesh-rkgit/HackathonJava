@@ -1,6 +1,8 @@
 package com.atci.quizhub.mcq;
 
 import com.atci.quizhub.auth.CurrentUser;
+import com.atci.quizhub.mcq.dto.BulkActionResult;
+import com.atci.quizhub.mcq.dto.IdListRequest;
 import com.atci.quizhub.mcq.dto.McqRequest;
 import com.atci.quizhub.mcq.dto.McqResponse;
 import com.atci.quizhub.review.ReviewService;
@@ -8,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/mcqs")
@@ -29,6 +33,11 @@ public class McqController {
     @PostMapping
     public McqResponse create(@Valid @RequestBody McqRequest req) {
         return service.create(req, currentUser.get().getEnterpriseId());
+    }
+
+    @PostMapping("/bulk-send-for-review")
+    public List<BulkActionResult> bulkSend(@Valid @RequestBody IdListRequest req) {
+        return service.bulkSendForReview(req.ids(), currentUser.get().getEnterpriseId());
     }
 
     @PutMapping("/{id}")

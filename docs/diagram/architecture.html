@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Spline+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f4f0e8; --card:#fbf9f4; --ink:#1a2540; --ink-soft:#45506b; --ink-faint:#8a8475;
+    --line:#d8d0c0; --line-strong:#c2b8a3; --navy:#1a2b4a; --navy2:#24375c;
+    --amber:#e0982a; --amber-soft:#f6e4c0; --rust:#b5482e; --green:#3e8e4c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:'Spline Sans',sans-serif;background:var(--paper);color:var(--ink)}
+  /* 1280x720 canvas — 16:9, crisp when scaled into the slide */
+  .canvas{
+    width:1280px;height:720px;position:relative;overflow:hidden;
+    background:
+      radial-gradient(900px 540px at 90% -10%, rgba(224,152,42,.10), transparent 60%),
+      radial-gradient(760px 520px at -6% 6%, rgba(26,43,74,.06), transparent 55%),
+      var(--paper);
+    padding:34px 40px;
+  }
+  .grain{position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");}
+  .head{display:flex;align-items:baseline;gap:14px;position:relative;z-index:2}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--amber)}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:30px;letter-spacing:-.01em}
+  h1 em{font-style:italic;color:var(--navy2)}
+  .grid{position:relative;z-index:2;display:grid;grid-template-columns:1.32fr 1fr;gap:24px;margin-top:20px;height:600px}
+
+  /* layer stack (left) */
+  .stack{display:flex;flex-direction:column;gap:12px}
+  .layer{border:1.5px solid var(--line-strong);border-radius:12px;background:var(--card);
+    padding:13px 18px;box-shadow:0 1px 2px rgba(26,37,64,.05);position:relative}
+  .layer .tag{font-family:'Fraunces',serif;font-weight:600;font-size:17px;display:flex;align-items:center;gap:10px}
+  .layer .tech{font-size:13px;color:var(--ink-soft);margin-top:4px;line-height:1.45}
+  .pin{width:11px;height:11px;border-radius:50%;flex:none}
+  .l-fe .pin{background:#3f74ad} .l-int .pin{background:var(--amber)}
+  .l-web .pin{background:var(--navy)} .l-dao .pin{background:#7a6cc4} .l-db .pin{background:var(--green)}
+  .layer.l-fe{border-left:5px solid #3f74ad}
+  .layer.l-int{border-left:5px solid var(--amber)}
+  .layer.l-web{border-left:5px solid var(--navy)}
+  .layer.l-dao{border-left:5px solid #7a6cc4}
+  .layer.l-db{border-left:5px solid var(--green)}
+  .flow{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);text-align:center;letter-spacing:.04em}
+
+  /* right column: lifecycle + ER */
+  .panel{border:1.5px solid var(--line);border-radius:12px;background:var(--card);padding:16px 18px;box-shadow:0 1px 2px rgba(26,37,64,.05)}
+  .panel h2{font-family:'Fraunces',serif;font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+  .panel h2::before{content:'';width:20px;height:3px;background:var(--amber);border-radius:2px}
+
+  /* lifecycle pills */
+  .life{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-size:12px;font-weight:600}
+  .node{padding:6px 12px;border-radius:100px;border:1.5px solid var(--line-strong);background:var(--paper);white-space:nowrap}
+  .node.draft{border-color:#9c9279;color:#6c6552}
+  .node.ready{border-color:#3f74ad;color:#2c5078;background:#eef4fb}
+  .node.review{border-color:var(--amber);color:#8a5a16;background:var(--amber-soft)}
+  .node.approved{border-color:var(--green);color:#2f6b39;background:#e7f3e8}
+  .node.rejected{border-color:var(--rust);color:#9c3a23;background:#f6e3dd}
+  .arr{color:var(--ink-faint);font-size:14px}
+  .loop{font-size:11px;color:var(--rust);margin-top:9px;font-style:italic}
+
+  /* ER mini */
+  .er{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.85;color:var(--ink-soft)}
+  .er b{color:var(--navy)}
+  .er .rel{color:var(--amber);font-weight:700}
+
+  .foot{position:absolute;bottom:16px;left:40px;right:40px;display:flex;justify-content:space-between;
+    font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);z-index:2}
+  .badge{display:inline-flex;gap:7px;align-items:center}
+  .badge b{color:var(--green)}
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="grain"></div>
+  <div class="head">
+    <span class="eyebrow">Software Architecture</span>
+    <h1>Smart Quiz <em>AI Hub</em></h1>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: layered stack -->
+    <div class="stack">
+      <div class="layer l-fe">
+        <div class="tag"><span class="pin"></span>Front End</div>
+        <div class="tech">React 18 · TypeScript · Vite · React Router · Framer Motion · custom design system</div>
+      </div>
+      <div class="flow">▼ &nbsp; REST / JSON · JWT bearer token &nbsp; ▼</div>
+      <div class="layer l-int">
+        <div class="tag"><span class="pin"></span>Integration Layer</div>
+        <div class="tech">Spring Security + JWT (stateless, role-based) · CORS · Bean Validation · @RestControllerAdvice · Apache POI (Excel)</div>
+      </div>
+      <div class="layer l-web">
+        <div class="tag"><span class="pin"></span>Web Layer</div>
+        <div class="tech">Spring Boot 3 (Java 17) REST controllers · /api/auth · /mcqs · /reviews · /admin · /masterdata · /bulk</div>
+      </div>
+      <div class="layer l-dao">
+        <div class="tag"><span class="pin"></span>Service + DAO / Persistence</div>
+        <div class="tech">Service layer with <b>McqLifecycle</b> state-machine · Spring Data JPA / Hibernate repositories</div>
+      </div>
+      <div class="layer l-db">
+        <div class="tag"><span class="pin"></span>Database</div>
+        <div class="tech">H2 in-memory (zero-setup, auto-seeded) · PostgreSQL profile for production</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: lifecycle + ER -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="panel">
+        <h2>MCQ Lifecycle &mdash; state machine</h2>
+        <div class="life">
+          <span class="node draft">Draft</span><span class="arr">→</span>
+          <span class="node ready">Ready for Review</span><span class="arr">→</span>
+          <span class="node review">Under Review</span>
+        </div>
+        <div class="life" style="margin-top:8px;padding-left:4px">
+          <span class="arr">└▶</span>
+          <span class="node approved">Approved</span>
+          <span class="arr">/</span>
+          <span class="node rejected">Rejected</span>
+        </div>
+        <div class="loop">↩ Rejected → creator edits &amp; resubmits → back to Ready (multi-cycle, audited)</div>
+      </div>
+
+      <div class="panel" style="flex:1">
+        <h2>Data Model (ER)</h2>
+        <div class="er">
+          <div><b>User</b> <span class="rel">1—*</span> <b>UserSkill</b> <span class="rel">*—1</span> <b>TechStack</b></div>
+          <div><b>TechStack</b> <span class="rel">1—*</span> <b>Topic</b></div>
+          <div><b>Mcq</b> <span class="rel">*—1</span> TechStack · Topic · User<sub>(creator)</sub></div>
+          <div><b>Mcq</b> <span class="rel">1—*</span> <b>ReviewAssignment</b> <span class="rel">*—1</span> User<sub>(reviewer)</sub></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Patterns &amp; Quality</h2>
+        <div class="er" style="font-family:'Spline Sans';font-size:12.5px;line-height:1.6;color:var(--ink-soft)">
+          Layered modular monolith · single-owner state machine ·
+          DTO boundary · role checks at URL + service layers ·
+          <b style="color:var(--navy)">35 automated tests</b> (JUnit 5 + MockMvc)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>ThinkOut · Hack-N-Stack: Code the Future · 2026</span>
+    <span class="badge">Quality gate: no MCQ reaches <b>Approved</b> without skill-matched, non-author review</span>
+  </div>
+</div>
+</body>
+</html>

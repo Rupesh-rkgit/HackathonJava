@@ -101,3 +101,4 @@ Before zipping (≤ 10 MB): delete `backend/target/` and `frontend/node_modules/
 ```
 rm -rf backend/target frontend/node_modules frontend/dist
 ```
+

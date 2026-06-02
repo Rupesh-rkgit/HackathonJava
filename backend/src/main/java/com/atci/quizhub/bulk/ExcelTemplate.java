@@ -1,6 +1,9 @@
 package com.atci.quizhub.bulk;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
@@ -32,14 +35,22 @@ public final class ExcelTemplate {
     private ExcelTemplate() {}
 
     public static byte[] emptyTemplate() {
-        try (Workbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+        try (XSSFWorkbook wb = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = wb.createSheet("MCQs");
 
-            // Bold header style
-            Font headerFont = wb.createFont();
+            // Header style: explicit WHITE bold text on a solid NAVY fill, with
+            // borders. Everything is explicit so it never resolves to an invisible
+            // theme colour in any Excel theme.
+            XSSFFont headerFont = wb.createFont();
             headerFont.setBold(true);
-            CellStyle headerStyle = wb.createCellStyle();
+            headerFont.setColor(new XSSFColor(new byte[]{(byte)0xFF,(byte)0xFF,(byte)0xFF}, null));
+            XSSFCellStyle headerStyle = wb.createCellStyle();
             headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(new XSSFColor(new byte[]{(byte)0x1A,(byte)0x2B,(byte)0x4A}, null));
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setAlignment(HorizontalAlignment.LEFT);
+            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
 
             Row header = sheet.createRow(0);
             for (int i = 0; i < HEADERS.length; i++) {

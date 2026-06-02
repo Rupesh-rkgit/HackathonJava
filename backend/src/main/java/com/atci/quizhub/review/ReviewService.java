@@ -73,7 +73,9 @@ public class ReviewService {
     }
 
     public String latestComments(Long mcqId) {
-        return assignments.findFirstByMcqIdOrderByAssignedAtDesc(mcqId)
+        // Return the comment from the most recent *rejection*, not merely the latest
+        // assignment — after a resubmit a fresh PENDING row exists with no comment yet.
+        return assignments.findFirstByMcqIdAndOutcomeOrderByAssignedAtDesc(mcqId, ReviewOutcome.REJECTED)
                 .map(ReviewAssignment::getComments).orElse(null);
     }
 

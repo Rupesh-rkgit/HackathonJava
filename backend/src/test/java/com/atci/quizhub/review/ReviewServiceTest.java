@@ -83,4 +83,23 @@ class ReviewServiceTest {
         assertThrows(ForbiddenException.class,
             () -> reviewService.approve(id, "swati.avinash.nikam"));
     }
+
+    @Test
+    void rejectionCommentSurvivesResubmitAndReassignment() {
+        // Multi-cycle: reject with a comment, creator resubmits, admin reassigns.
+        // The original rejection feedback must still be retrievable (not hidden by the
+        // fresh PENDING assignment that has no comment yet).
+        Long id = newReadyMcq();
+        reviewService.assign(id, reviewer, admin);
+        reviewService.reject(id, reviewer, "Option C is wrong");
+
+        // creator edits and re-sends for review (REJECTED -> READY_FOR_REVIEW)
+        mcqService.update(id, new McqRequest("Q fixed?", "a","b","c","d",
+            AnswerOption.A, Difficulty.EASY, stackId, topicId, SaveMode.SAVE_AND_SEND), creator);
+        // admin assigns again -> a new PENDING assignment with null comments
+        reviewService.assign(id, reviewer, admin);
+
+        assertEquals("Option C is wrong", reviewService.latestComments(id),
+            "Prior rejection feedback should remain visible after resubmit");
+    }
 }

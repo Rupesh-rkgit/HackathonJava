@@ -47,6 +47,12 @@ public class McqService {
         if (!isCreator && !isAdmin) {
             throw new ForbiddenException("Only the creator or an admin may edit this MCQ");
         }
+        // Spec: a Draft is accessible ONLY to its creator — even an admin cannot edit
+        // someone else's Draft. Admins may edit any OTHER state as super-users.
+        if (m.getStatus() == McqStatus.DRAFT && !isCreator) {
+            throw new ForbiddenException("Draft MCQs are accessible only to their creator");
+        }
+        // For non-admins, only Draft/Rejected are editable at all.
         if (!lifecycle.isEditableByCreator(m.getStatus()) && !isAdmin) {
             throw new ForbiddenException("MCQ in status " + m.getStatus() + " is not editable");
         }

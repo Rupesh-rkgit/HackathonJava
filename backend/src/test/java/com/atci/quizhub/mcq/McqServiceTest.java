@@ -63,4 +63,20 @@ class McqServiceTest {
         assertThrows(ForbiddenException.class,
             () -> service.update(draft.id(), req(SaveMode.SAVE), "divya.madhanasekar"));
     }
+
+    @Test
+    void adminCannotEditAnotherUsersDraft() {
+        // Spec: a Draft is accessible only to its creator, even for an admin super-user.
+        var draft = service.create(req(SaveMode.SAVE), sme);
+        assertThrows(ForbiddenException.class,
+            () -> service.update(draft.id(), req(SaveMode.SAVE), "birendra.kumar.singh"));
+    }
+
+    @Test
+    void adminCanEditNonDraftOfAnotherUser() {
+        // Admins may super-edit any OTHER state. Send to review (READY_FOR_REVIEW), then admin edits.
+        var ready = service.create(req(SaveMode.SAVE_AND_SEND), sme);
+        var updated = service.update(ready.id(), req(SaveMode.SAVE), "birendra.kumar.singh");
+        assertEquals(McqStatus.READY_FOR_REVIEW, updated.status());
+    }
 }
